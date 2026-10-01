@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Pybricks: jalankan main.py",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "pybricksdev", "run", "ble", "--name", "Kancil", "${workspaceFolder}/main.py"],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pybricks: jalankan kalibrasi.py",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "pybricksdev", "run", "ble", "--name", "Kancil", "${workspaceFolder}/kalibrasi.py"],
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
