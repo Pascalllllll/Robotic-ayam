@@ -14,7 +14,7 @@ from math import sin, cos, atan2, radians, degrees
 from pybricks.parameters import Button
 from pybricks.tools import wait
 
-from perangkat import hub, sensor_dinding
+from perangkat import hub, wall_sensor
 
 SAMPLES = 50   # jumlah pembacaan per warna
 GAP = 20       # jeda antar pembacaan (ms)
@@ -36,7 +36,7 @@ def ukur():
     total_s = 0
     total_v = 0
     for i in range(SAMPLES):
-        c = sensor_dinding.hsv()
+        c = wall_sensor.hsv()
         sx += cos(radians(c.h))
         sy += sin(radians(c.h))
         total_s += c.s
@@ -65,7 +65,7 @@ for nama in ("MERAH", "HIJAU", "KUNING"):
 
 print("")
 print("Salin ke perangkat.py:")
-for nama in ("MERAH", "HIJAU", "KUNING"):
+for nama in ("RED", "GREEN", "YELLOW"):
     h, s, v = hasil[nama]
     print(nama, "= Color(" + str(h) + ",", str(s) + ",", str(v) + ")")
 

@@ -5,7 +5,7 @@
 
 from pybricks.tools import wait, StopWatch
 
-from perangkat import robot, sensor
+from template_perangkat import robot, sensor
 
 timer = StopWatch()
 lo = 100

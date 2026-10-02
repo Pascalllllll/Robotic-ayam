@@ -3,7 +3,7 @@
 
 from pybricks.tools import wait
 
-from perangkat import robot, sensor
+from template_perangkat import robot, sensor
 
 # --- hasil pengukuran, ukur ulang dengan kalibrasi.py setiap ganti lintasan atau ruangan ---
 BLACK = 9

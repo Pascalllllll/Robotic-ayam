@@ -7,22 +7,25 @@ from pybricks.parameters import Port, Direction, Color
 from pybricks.robotics import DriveBase
 
 hub = InventorHub()
-left = Motor(Port.B, Direction.COUNTERCLOCKWISE)
-right = Motor(Port.A, Direction.CLOCKWISE)
-sensor = ColorSensor(Port.C)
-sensor_dinding = ColorSensor(Port.E)
-jarak = UltrasonicSensor(Port.F)
+left_motor = Motor(Port.B, Direction.COUNTERCLOCKWISE)
+right_motor = Motor(Port.A, Direction.CLOCKWISE)
+line_sensor = ColorSensor(Port.C)
+wall_sensor = ColorSensor(Port.E)
+distance_sensor = UltrasonicSensor(Port.F)
 
 # --- hasil pengukuran, ganti dengan hasil kalibrasi_warna.py ---
-# Nilai awal di bawah masih warna bawaan Pybricks.
-MERAH = Color(352, 88, 29)
-HIJAU = Color(133, 53, 11)
-KUNING = Color(29, 67, 32)
 
-# Batasi warna yang dikenali supaya merah/hijau/kuning tidak tertukar
-# dengan warna lain.
-sensor_dinding.detectable_colors([MERAH, HIJAU, KUNING, Color.NONE])
+# RED = Color.RED
+# GREEN = Color.GREEN
+# YELLOW = Color.YELLOW
+
+RED = Color(352, 88, 29)
+GREEN = Color(133, 53, 11)
+YELLOW = Color(29, 67, 32)
+
+# Batasi warna yang dikenali supaya merah/hijau/kuning tidak tertukar dengan warna lain.
+# wall_sensor.detectable_colors([RED, GREEN, YELLOW, Color.NONE])
 
 # Ganti dengan hasil kalibrasi robot kalian sendiri,
 # lihat bagian 8 dasar-pybricks.md.
-robot = DriveBase(left, right, wheel_diameter=56, axle_track=114)
+robot = DriveBase(left_motor, right_motor, wheel_diameter=56, axle_track=114)

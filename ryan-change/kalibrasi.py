@@ -5,7 +5,7 @@
 
 from pybricks.tools import wait, StopWatch
 
-from perangkat import robot, sensor
+from perangkat import robot, line_sensor
 
 timer = StopWatch()
 lo = 100
@@ -14,7 +14,7 @@ hi = 0
 robot.drive(0, 60)
 
 while timer.time() < 5000:
-    value = sensor.reflection()
+    value = line_sensor.reflection()
     lo = min(lo, value)
     hi = max(hi, value)
     wait(10)
