@@ -42,12 +42,12 @@ while True:
 
         # negatif = kiri, positif = kanan
         if color == RED:
-            hub.display.icon(Icon.ARROW_LEFT)
             hub.speaker.beep(400, 200)
+            hub.display.icon(Icon.ARROW_LEFT)
             direction = -90
         elif color == GREEN:
-            hub.display.icon(Icon.ARROW_RIGHT)
             hub.speaker.beep(800, 200)
+            hub.display.icon(Icon.ARROW_RIGHT)
             direction = 90
         elif color == YELLOW:
             hub.speaker.beep(1200, 200)
