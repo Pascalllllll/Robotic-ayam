@@ -8,7 +8,7 @@ BLACK = 3
 WHITE = 32
 
 # --- Speed ---
-BASE_SPEED = 200
+BASE_SPEED = 300
 MIN_SPEED = 60
 BACKUP_SPEED = -100
 
@@ -22,10 +22,11 @@ LOOP_MS = 10
 LOST_MS = 300
 
 # --- Wall detection ---
-WALL_MM = 100
+WALL_MM_SLOW = 120
+WALL_MM_DETECT = 80
 
 # 1 kiri, 0 kanan
-YELLOW_TURN_LEFT = 1
+YELLOW_TURN_LEFT = 0
 
 THRESHOLD = (BLACK + WHITE) / 2
 SCALE = 200 / (WHITE - BLACK)
@@ -39,8 +40,14 @@ while True:
 
     # ===== wall detection ======
 
-    if distance_sensor.distance() < WALL_MM:
-        robot.drive(MIN_SPEED/2, 0)
+    if distance_sensor.distance() < WALL_MM_SLOW:
+        while distance_sensor.distance() > WALL_MM_DETECT:
+            robot.drive(MIN_SPEED/2, 0)
+            wait(LOOP_MS)
+
+        # robot.stop()
+        # wait(50) 
+        # robot.drive(MIN_SPEED/2, 0)
 
         detected_color = None
         hsv = wall_sensor.hsv()
