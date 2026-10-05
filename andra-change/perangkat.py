@@ -1,27 +1,31 @@
+# Blok setup robot. Dipakai bersama oleh main.py dan kalibrasi.py,
+# jadi port dan ukuran roda cukup diubah di satu tempat ini.
+
 from pybricks.hubs import InventorHub
 from pybricks.pupdevices import Motor, ColorSensor, UltrasonicSensor
-from pybricks.parameters import Port, Direction
+from pybricks.parameters import Port, Direction, Color
 from pybricks.robotics import DriveBase
 
 hub = InventorHub()
-
-left = Motor(Port.B, Direction.CLOCKWISE)
-right = Motor(Port.A, Direction.CLOCKWISE)
-
+left_motor = Motor(Port.B, Direction.COUNTERCLOCKWISE)
+right_motor = Motor(Port.A, Direction.CLOCKWISE)
 line_sensor = ColorSensor(Port.C)
-sensor = line_sensor
-
 wall_sensor = ColorSensor(Port.E)
-eyes = UltrasonicSensor(Port.F)
+distance_sensor = UltrasonicSensor(Port.F)
 
-WHEEL_DIAMETER = 56
-AXLE_TRACK = 114
+# --- hasil pengukuran, ganti dengan hasil kalibrasi_warna.py ---
 
-robot = DriveBase(left, right, wheel_diameter=WHEEL_DIAMETER, axle_track=AXLE_TRACK)
+# RED = Color.RED
+# GREEN = Color.GREEN
+# YELLOW = Color.YELLOW
 
-robot.settings(
-    straight_speed=120,
-    straight_acceleration=300,
-    turn_rate=100,
-    turn_acceleration=200
-)
+RED = Color(337)
+GREEN = Color(135)
+YELLOW = Color(10)
+
+# Batasi warna yang dikenali supaya merah/hijau/kuning tidak tertukar dengan warna lain.
+wall_sensor.detectable_colors([RED, GREEN, YELLOW, Color.NONE])
+
+# Ganti dengan hasil kalibrasi robot kalian sendiri,
+# lihat bagian 8 dasar-pybricks.md.
+robot = DriveBase(left_motor, right_motor, wheel_diameter=56, axle_track=80)

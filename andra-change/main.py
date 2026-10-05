@@ -1,125 +1,128 @@
 from pybricks.tools import wait
-from pybricks.parameters import Color
-from perangkat import hub, robot, line_sensor, wall_sensor, eyes
+from pybricks.parameters import Icon
 
-BLACK = 10
-WHITE = 96
+from perangkat import hub, robot, line_sensor, wall_sensor, distance_sensor, RED, GREEN, YELLOW
+
+# --- hasil pengukuran, ukur ulang dengan kalibrasi.py setiap ganti lintasan atau ruangan ---
+BLACK = 3
+WHITE = 32
+
+# --- Speed ---
+BASE_SPEED = 200
+MIN_SPEED = 60
+BACKUP_SPEED = -100
+
+# --- PID ---
+KP = 1.6
+KD = 3.0
+
+# --- Timing ---
+BACKUP_MS = 200
+LOOP_MS = 10
+LOST_MS = 300
+
+# --- Wall detection ---
+WALL_MM = 100
+
+# 1 kiri, 0 kanan
+YELLOW_TURN_LEFT = 1
 
 THRESHOLD = (BLACK + WHITE) / 2
-SCALE = 200 / max((WHITE - BLACK), 1)
+SCALE = 200 / (WHITE - BLACK)
 
-SPEED = 65
-KP = 0.75
-KD = 1.0
-MAX_TURN = 90
-KEBALIKAN = True
-
-WALL_DISTANCE_MM = 100
-BACKUP_DISTANCE = -50
-
-LOOP_MS = 10
 last_error = 0
+lost_time = 0
 
-def cek_dinding():
-    try:
-        dist = eyes.distance()
-        if dist is not None and 10 < dist <= WALL_DISTANCE_MM:
-            return True
-    except Exception:
-        pass
-    return False
-
-def deteksi_warna_dinding():
-    samples = []
-    for _ in range(5):
-        hsv = wall_sensor.hsv()
-        samples.append(hsv.h)
-        wait(15)
-    samples.sort()
-    h = samples[2]
-
-    print(f"[PORT E] Hue Terbaca: {h}")
-
-    if h >= 340 or h <= 25:
-        return Color.RED
-    elif 26 <= h <= 88:
-        return Color.YELLOW
-    elif 92 <= h <= 190:
-        return Color.GREEN
-    else:
-        if h < 26 or h > 280:
-            return Color.RED
-        elif h < 90:
-            return Color.YELLOW
-        else:
-            return Color.GREEN
-
-def handle_dinding():
-    robot.stop()
-    wait(150)
-
-    warna = deteksi_warna_dinding()
-    print("-> Dinding Terdeteksi! Warna:", warna)
-
-    if warna in (Color.RED, Color.GREEN, Color.YELLOW):
-        hub.light.on(warna)
-
-    try:
-        if warna == Color.RED:
-            hub.speaker.beep(frequency=440, duration=150)
-        elif warna == Color.GREEN:
-            hub.speaker.beep(frequency=880, duration=150)
-        elif warna == Color.YELLOW:
-            hub.speaker.beep(frequency=660, duration=150)
-    except Exception:
-        pass
-
-    if warna == Color.GREEN:
-        print("[AKSI] Hijau: Mundur sedikit -> Belok Kanan")
-        robot.straight(BACKUP_DISTANCE)
-        robot.turn(90)
-
-    elif warna == Color.RED:
-        print("[AKSI] Merah: Mundur sedikit -> Belok Kiri")
-        robot.straight(BACKUP_DISTANCE)
-        robot.turn(-90)
-
-    elif warna == Color.YELLOW:
-        print("[AKSI] Kuning: Mundur sedikit -> Belok Kanan")
-        robot.straight(BACKUP_DISTANCE)
-        robot.turn(90)
-
-    else:
-        robot.straight(BACKUP_DISTANCE)
-        robot.turn(90)
-
-    hub.light.on(Color.WHITE)
-    robot.straight(40)
-
-hub.light.on(Color.GREEN)
-wait(1000)
+hub.display.icon(Icon.HAPPY)
 
 while True:
-    if cek_dinding():
-        handle_dinding()
+
+    # ===== wall detection ======
+
+    if distance_sensor.distance() < WALL_MM:
+        robot.drive(MIN_SPEED/2, 0)
+
+        detected_color = None
+        hsv = wall_sensor.hsv()
+        h = hsv.h
+
+        color = wall_sensor.color()
+        while True:
+            
+            hsv = wall_sensor.hsv()
+            h = hsv.h
+
+            if 30 <= h <= 50:
+                detected_color = 'YELLOW'
+                break
+            elif 140 <= h <= 160:
+                detected_color = 'GREEN'
+                break
+            elif (340 < h <= 360):
+                detected_color = 'RED'
+                break
+
+            wait(LOOP_MS)
+        
+        robot.stop()
+
+        # negatif = kiri, positif = kanan
+        if detected_color == 'YELLOW':
+            hub.speaker.beep(1200, 200)
+            if YELLOW_TURN_LEFT:
+                hub.display.icon(Icon.ARROW_LEFT)
+                direction = -90
+                print('kuning kiri')
+            else:
+                hub.display.icon(Icon.ARROW_RIGHT)
+                direction = 90
+                print('kuning kanan')
+
+        elif detected_color == 'GREEN':
+            hub.speaker.beep(800, 200)
+            hub.display.icon(Icon.ARROW_RIGHT)
+            direction = 90
+            print('green')
+
+        elif detected_color == 'RED':
+            hub.speaker.beep(400, 200)
+            hub.display.icon(Icon.ARROW_LEFT)
+            direction = -90
+            print('red')
+        
+        robot.turn(direction)
+        hub.display.icon(Icon.HAPPY)
+
         last_error = 0
-        continue
+        lost_time = 0
 
-    val = line_sensor.reflection()
-    error = (val - THRESHOLD) * SCALE
+    # ===========================
 
-    if KEBALIKAN:
-        error = -error
 
-    derivative = error - last_error
-    turn_rate = (KP * error) + (KD * derivative)
+    # ===== line following ======
 
-    if turn_rate > MAX_TURN:
-        turn_rate = MAX_TURN
-    elif turn_rate < -MAX_TURN:
-        turn_rate = -MAX_TURN
+    if YELLOW_TURN_LEFT:
+        error = (line_sensor.reflection() - THRESHOLD) * SCALE
+    else:
+        error = (THRESHOLD - line_sensor.reflection()) * SCALE
 
-    robot.drive(SPEED, turn_rate)
+    if error > 80:
+        lost_time = lost_time + LOOP_MS
+    else:
+        lost_time = 0
 
-    last_error = error
+    if lost_time > (LOST_MS + BACKUP_MS):
+        # Garis hilang: berputar ke arah garis terakhir terlihat.
+        robot.drive(0, 90 if last_error > 0 else -90)
+    elif lost_time > LOST_MS:
+        # Garis hilang: mundur dulu, baru berputar ke arah garis terakhir terlihat.
+        robot.drive(BACKUP_SPEED, 0)
+    else:
+        derivative = error - last_error
+        speed = BASE_SPEED - (BASE_SPEED - MIN_SPEED) * abs(error) / 100
+        robot.drive(speed, KP * error + KD * derivative)
+        last_error = error
+
+    # ===========================
+
     wait(LOOP_MS)

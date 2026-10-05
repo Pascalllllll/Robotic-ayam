@@ -15,13 +15,13 @@ distance_sensor = UltrasonicSensor(Port.F)
 
 # --- hasil pengukuran, ganti dengan hasil kalibrasi_warna.py ---
 
-# RED = Color.RED
-# GREEN = Color.GREEN
-# YELLOW = Color.YELLOW
+RED = Color.RED
+GREEN = Color.GREEN
+YELLOW = Color.YELLOW
 
-RED = Color(352, 88, 29)
-GREEN = Color(133, 53, 11)
-YELLOW = Color(29, 67, 32)
+# RED = Color(352, 88, 29)
+# GREEN = Color(133, 53, 11)
+# YELLOW = Color(29, 67, 32)
 
 # Batasi warna yang dikenali supaya merah/hijau/kuning tidak tertukar dengan warna lain.
 # wall_sensor.detectable_colors([RED, GREEN, YELLOW, Color.NONE])
