@@ -8,13 +8,13 @@ BLACK = 5
 WHITE = 33
 
 # Kecepatan
-BASE_SPEED = 200
+BASE_SPEED = 250
 MIN_SPEED = 60
 CRAWL_SPEED = 30
 BACKUP_SPEED = -100
 
 # PID
-KP = 1.6
+KP = 1.8
 KD = 3.0
 
 # Timing
