@@ -8,7 +8,7 @@ BLACK = 3
 WHITE = 32
 
 # --- Speed ---
-BASE_SPEED = 300
+BASE_SPEED = 200
 MIN_SPEED = 60
 BACKUP_SPEED = -100
 
@@ -42,20 +42,15 @@ while True:
 
     if distance_sensor.distance() < WALL_MM_SLOW:
         while distance_sensor.distance() > WALL_MM_DETECT:
-            robot.drive(MIN_SPEED/2, 0)
+            robot.drive(MIN_SPEED, 0)
             wait(LOOP_MS)
 
-        # robot.stop()
-        # wait(50) 
-        # robot.drive(MIN_SPEED/2, 0)
+        robot.stop()
+        wait(500) 
+        robot.drive(MIN_SPEED/2, 0)
 
         detected_color = None
-        hsv = wall_sensor.hsv()
-        h = hsv.h
-
-        color = wall_sensor.color()
         while True:
-            
             hsv = wall_sensor.hsv()
             h = hsv.h
 
